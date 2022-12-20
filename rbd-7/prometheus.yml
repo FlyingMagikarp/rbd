@@ -1,0 +1,59 @@
+# my global config
+global:
+  scrape_interval: 60s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+  external_labels:
+    monitor: 'RBD Cluster Monitor'
+    cluster: pulsar-cluster-rbd
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+    scrape_interval: 5s
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+
+  - job_name: "zookeeper"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["rbd-1:8000", "rbd-2:8000", "rbd-3:8000"]
+
+
+  - job_name: "bookkeeper"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["rbd-4:8000", "rbd-5:8000", "rbd-6:8000"]
+
+
+  - job_name: "broker"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["rbd-4:8080", "rbd-5:8080", "rbd-6:8080"]
+
+  - job_name: "doris"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["rbd-8:8030"]
+        labels:
+          group: fe
+      - targets: ["rbd-9:8040", "rbd-10:8040", "rbd-11:8040"]
+        labels: 
+          group: be

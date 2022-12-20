@@ -1,0 +1,114 @@
+setup vm network 
+
+installed java
+installed pulsar on nodes 1-6
+
+on nodes 1-3 installed zookeeper
+copied config from official doc tutorial
+
+sudo ./bin/pulsar-daemon start/restart/stop zookeeper
+
+checked zookeeper with
+telnet localhost 2181
+stats
+
+initialize metadata
+
+initialize-cluster-metadata \
+  --cluster pulsar-cluster-rbd \
+  --metadata-store zk:rbd-1:2181,rbd-2:2181/my-chroot-path \
+  --configuration-metadata-store zk:rbd-1:2181,rbd-2:2181/my-chroot-path \
+  --web-service-url http://rbd-1:8080,rbd-2:8080,rbd-3:8080 \
+  --web-service-url-tls https://rbd-1:8443,rbd-2:8443,rbd-3:8443 \
+  --broker-service-url pulsar://rbd-1:6650,rbd-2:6550,rbd-3:6550 \
+  --broker-service-url-tls pulsar+ssl://rbd-1:6651,rbd-2:6651,rbd-3:6651
+
+setup bokkkeepers
+following tutorial from ppulsar didn't work 
+setup from https://bookkeeper.apache.org/docs/4.10.0/deployment/manual/ helps
+change conf file
+initialize cluster metadata setup
+start bookie in background with bin/pulsar-daemon start bookie
+check with bin/bookkeeper shell bookiesanity
+
+
+
+broker config from tutorial
+
+start with bin/pulsar-daemon start broker
+
+
+
+
+
+
+
+
+
+OrderingGuarantee
+
+Start producer with highish delay 1-2 sec
+start consumer
+stop consumer
+wait a few secs
+start consumer again
+
+all missed messages are still received
+
+
+semantics?
+only at least once(leads to duplicate) or at most once(leads to missed data)
+
+
+
+
+
+###DORIS###
+rbd 8-11
+rbd 8 FE node
+rbd 9,10,11 BE node
+
+localhost:14218 web gui
+login root no pw
+
+
+CREATE TABLE IF NOT EXISTS rbd.answer_male
+(
+    `ID` LARGEINT KEY NOT NULL COMMENT "id",
+    `Age` SMALLINT COMMENT "",
+    `Country` VARCHAR(50) COMMENT "",
+    `state` VARCHAR(50) COMMENT "",
+    `self_employed` VARCHAR(3) COMMENT "",
+    `family_history` VARCHAR(3) COMMENT "",
+    `treatment` VARCHAR(3) COMMENT "",
+    `work_interfere` VARCHAR(10) COMMENT "",
+    `no_employee` VARCHAR(20) COMMENT "",
+    `remote_work` VARCHAR(3) COMMENT "",
+    `tech_company` VARCHAR(3) COMMENT "",
+    `benefits` VARCHAR(12) COMMENT "",
+    `care_options` VARCHAR(10) COMMENT "",
+    `wellness_program` VARCHAR(12) COMMENT "",
+    `seek_help` VARCHAR(12) COMMENT "",
+    `anonymity` VARCHAR(12) COMMENT "",
+    `leave` VARCHAR(25) COMMENT "",
+    `mental_health_consequence` VARCHAR(10) COMMENT "",
+    `phys_health_consequence` VARCHAR(10) COMMENT "",
+    `coworkers` VARCHAR(16) COMMENT "",
+    `supervisor` VARCHAR(16) COMMENT "",
+    `mental_health_interview` VARCHAR(6) COMMENT "",
+    `phys_health_interview` VARCHAR(6) COMMENT "",
+    `mental_vs_physical` VARCHAR(12) COMMENT "",
+    `obs_consequence` VARCHAR(5) COMMENT "",
+    `comments` VARCHAR(4096) COMMENT "",
+    `Time` LARGEINT COMMENT ""
+)
+DISTRIBUTED BY HASH(`ID`) BUCKETS 1
+PROPERTIES (
+    "replication_allocation" = "tag.location.default: 1"
+);
+
+
+curl --location-trusted -u root -T tmp.json -H "label:male" -H "format: json" http://rbd-8:8030/api/rbd/answer_test/_stream_load
+
+
+

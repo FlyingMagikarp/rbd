@@ -1,0 +1,28 @@
+group rbd
+rbduser
+pw: rbd
+
+shh port 1420X
+ssh -l rbduser -p 1420X localhost
+
+
+Pulsar setup
+3vm with zookeeper
+3vm with broker and bookkeeper
+
+zookeeper rbd1, rbd2, rbd3
+
+
+used rbd-1 to rbd-6
+
+
+use rbd-7 as client? or keep on rbd-1?...
+
+sudo ./bin/mysql -uroot -P9030 -h127.0.0.1
+
+
+./prometheus --config.file=prometheus.yml
+localhost:14217/targets prometheus pog service view
+./bin/grafana-server web
+
+
